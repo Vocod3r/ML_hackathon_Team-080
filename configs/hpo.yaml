@@ -34,6 +34,7 @@ team_search:
     learning_rate: {low: 0.015, high: 0.15, log: true}
     min_child_samples: {type: int, low: 10, high: 100}
     reg_lambda: {low: 0.001, high: 10.0, log: true}
+    colsample_bytree: {low: 0.5, high: 1.0}
   svm_rbf:
     C: {low: 0.1, high: 30.0, log: true}
     gamma: {low: 0.001, high: 0.2, log: true}
