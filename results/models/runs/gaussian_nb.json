@@ -1,0 +1,30 @@
+{
+  "model": "gaussian_nb",
+  "family": "Probabilistic",
+  "config": {
+    "var_smoothing": 1e-09
+  },
+  "max_train_rows": null,
+  "n_fit_rows": 1502391,
+  "seed": 42,
+  "cv_macro_f1_mean": 0.758855594181423,
+  "cv_macro_f1_std": 0.02026666475212815,
+  "cv_top1_mean": 0.7629963769913825,
+  "cv_train_macro_f1_mean": 0.7704039692420122,
+  "cv_log_loss": 2.0518585974311954,
+  "cv_top1_pooled": 0.7539788021130714,
+  "train_macro_f1_full": 0.7693717799184439,
+  "test_top1_accuracy": 0.8337160751565762,
+  "test_macro_f1": 0.7656953112941335,
+  "test_precision": 0.7253588627734794,
+  "test_recall": 0.9027259412614637,
+  "test_log_loss": 2.09348817491024,
+  "test_candidate_miss_rate": 0.0021398747390396658,
+  "test_route_continuity": 0.7192434814542784,
+  "test_top1_accuracy_trusted": 0.8348925939476297,
+  "train_time_s": 0.39,
+  "inference_time_s": 0.022,
+  "inference_ms_per_obs": 0.0012,
+  "test_partition": "student_test",
+  "timestamp": "2026-11-18T06:44:57"
+}

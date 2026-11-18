@@ -1,0 +1,31 @@
+{
+  "model": "knn",
+  "family": "Instance-based",
+  "config": {
+    "n_neighbors": 25,
+    "weights": "distance"
+  },
+  "max_train_rows": 200000,
+  "n_fit_rows": 200000,
+  "seed": 42,
+  "cv_macro_f1_mean": 0.9114449011217879,
+  "cv_macro_f1_std": 0.021513974509222895,
+  "cv_top1_mean": 0.787552260604156,
+  "cv_train_macro_f1_mean": 1.0,
+  "cv_log_loss": 0.1996124166190181,
+  "cv_top1_pooled": 0.7787224650580327,
+  "train_macro_f1_full": 1.0,
+  "test_top1_accuracy": 0.8729123173277662,
+  "test_macro_f1": 0.9182533176684036,
+  "test_precision": 0.9268735369647805,
+  "test_recall": 0.9101012908041624,
+  "test_log_loss": 0.15515961287538135,
+  "test_candidate_miss_rate": 0.0021398747390396658,
+  "test_route_continuity": 0.738349131121643,
+  "test_top1_accuracy_trusted": 0.8741441488527675,
+  "train_time_s": 0.07,
+  "inference_time_s": 11.376,
+  "inference_ms_per_obs": 0.5937,
+  "test_partition": "student_test",
+  "timestamp": "2026-11-18T06:48:36"
+}

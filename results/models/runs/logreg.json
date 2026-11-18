@@ -1,0 +1,32 @@
+{
+  "model": "logreg",
+  "family": "Linear",
+  "config": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "max_iter": 2000
+  },
+  "max_train_rows": null,
+  "n_fit_rows": 1502391,
+  "seed": 42,
+  "cv_macro_f1_mean": 0.8295370078630906,
+  "cv_macro_f1_std": 0.04414701067608458,
+  "cv_top1_mean": 0.792886937192009,
+  "cv_train_macro_f1_mean": 0.8535952658802184,
+  "cv_log_loss": 0.1907064360580832,
+  "cv_top1_pooled": 0.7841346915078904,
+  "train_macro_f1_full": 0.8530689434767881,
+  "test_top1_accuracy": 0.8677453027139874,
+  "test_macro_f1": 0.8498579822259806,
+  "test_precision": 0.8034142734875873,
+  "test_recall": 0.9336524487443028,
+  "test_log_loss": 0.17297702536801896,
+  "test_candidate_miss_rate": 0.0021398747390396658,
+  "test_route_continuity": 0.7504517165227866,
+  "test_top1_accuracy_trusted": 0.8689698426801861,
+  "train_time_s": 7.49,
+  "inference_time_s": 0.026,
+  "inference_ms_per_obs": 0.0013,
+  "test_partition": "student_test",
+  "timestamp": "2026-11-18T06:44:49"
+}
