@@ -36,8 +36,10 @@ models:
 
   svm_rbf:
     family: Kernel
-    max_train_rows: 30000           # SVC training time grows ~quadratically with rows
-    params: {C: 1.0, gamma: scale, class_weight: balanced}   # probabilities via CalibratedClassifierCV in model_zoo
+    # Exact RBF-SVC took ~30 min per CV fold at full size (prediction cost = support vectors x rows).
+    # We approximate the RBF kernel with Nystroem (300 landmark points) and train a linear SVM on it.
+    max_train_rows: 200000
+    params: {C: 1.0, class_weight: balanced, gamma: 0.0345, n_components: 300}   # gamma = 1 / n_features
 
   mlp:
     family: Neural network
