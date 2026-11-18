@@ -46,11 +46,24 @@ def create_route_map(trip: dict, *, reference_arcs=None, classifier_arcs=None,
     bounds = (float(lon.min() - padding_degrees), float(lat.min() - padding_degrees),
               float(lon.max() + padding_degrees), float(lat.max() + padding_degrees))
     center = [float(lat.mean()), float(lon.mean())]
-    m = folium.Map(location=center, tiles="CartoDB positron", control_scale=True)
+    m = folium.Map(location=center, tiles="OpenStreetMap", control_scale=True)
     title = folium.Element(f'<div style="position:fixed;top:10px;left:50px;z-index:9999;'
                            f'background:white;padding:6px 10px;border:1px solid #aaa">'
                            f'Trip {trip.get("trip_id", "")}</div>')
     m.get_root().html.add_child(title)
+    legend = folium.Element(
+        '<div style="position:fixed;bottom:24px;left:24px;z-index:9999;'
+        'background:white;padding:9px 12px;border:1px solid #aaa;border-radius:4px;'
+        'font:13px Arial;line-height:1.7">'
+        '<b>PathSnap layers</b><br>'
+        '<span style="color:#2878b5">━━</span> GPS track<br>'
+        '<span style="color:#777777">━━</span> Road network<br>'
+        '<span style="color:#2ca02c">━━</span> Reference route<br>'
+        '<span style="color:#ff7f0e">━━</span> Classifier route<br>'
+        '<span style="color:#d62728">━━</span> Predicted route (HMM)'
+        '</div>'
+    )
+    m.get_root().html.add_child(legend)
 
     gps = [[float(y), float(x)] for x, y in zip(lon, lat)]
     gps_group = folium.FeatureGroup(name="GPS track", show=True)
