@@ -2,6 +2,8 @@
 fastapi
 uvicorn[standard]
 folium
+streamlit
+requests
 PyYAML
 
 # Data, geospatial candidate generation, and graph decoding
