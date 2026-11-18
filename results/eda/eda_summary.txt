@@ -1,0 +1,36 @@
+              trips  obs_total  obs_mean  obs_min  obs_max  nodes_median  arcs_median  route_arcs_mean  untrusted_mean
+partition                                                                                                             
+student_test     10      19160  1916.000      262     3958        6596.5      13145.0            347.7           0.001
+train            80     208417  2605.212      361    19313        9608.0      19526.5            391.7           0.025
+
+NaN rows: 0; duplicate ts: 0; non-monotonic ts: 0
+Isolated nodes (trips affected): 0; trips with >1 weak component: 89 / 90
+Largest-component node share (min over trips): 0.693
+Trips with route breaks: 11; total breaks 14; min contiguity 0.9813
+Two-way arc share (mean): 0.922
+Share of steps exactly 1 s (mean over trips): 94.32%
+UTM vs haversine track length error: max 0.328%
+Trips with >5% untrusted fixes:
+   partition      trip  n_obs  untrusted_frac
+1      train  00000002   7243          0.1198
+26     train  00000033   5844          0.5902
+35     train  00000043   2322          0.0719
+44     train  00000054  19313          0.8890
+53     train  00000066   4325          0.0902
+Trips with a gap > 600 s:
+   partition      trip  max_gap_s  n_gaps_gt60s
+8      train  00000011      909.0             1
+16     train  00000021     2161.0             2
+34     train  00000042      670.0            17
+55     train  00000069     2658.0             2
+61     train  00000078    52810.0             1
+72     train  00000090   153064.0             1
+Candidate miss rate (%) by radius R (rows) and k (cols), train trusted fixes:
+K        1      3      5      10     15     20
+R                                             
+25   46.212  6.380  3.605  2.581  2.441  2.383
+50   45.545  4.978  1.970  0.707  0.492  0.284
+75   45.545  4.978  1.970  0.707  0.492  0.284
+100  45.545  4.978  1.970  0.707  0.492  0.284
+150  45.545  4.978  1.970  0.707  0.492  0.284
+200  45.545  4.978  1.970  0.707  0.492  0.284

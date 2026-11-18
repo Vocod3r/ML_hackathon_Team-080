@@ -1,0 +1,12 @@
+# AM320 data configuration (paths relative to repo root)
+raw_root: data/raw                 # data/raw/{train,student_test}/<trip_id>/<trip_id>.{track,nodes,arcs,route}
+processed_root: data/processed
+partitions: [train, student_test]  # evaluator-test trips are never listed / labelled offline
+candidates:
+  radius_m: 100        # chosen from results/eda/candidate_miss_sweep.csv
+  max_per_fix: 10
+labels:
+  align_cap_m: 150     # distance cap inside the monotone-alignment DP
+  trust_dist_m: 50     # fix label trusted only if aligned reference arc is within this distance
+projection: per-trip UTM (EPSG 326xx/327xx from mean track lon/lat)
+seed: 42
