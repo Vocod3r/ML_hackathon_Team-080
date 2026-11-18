@@ -1,0 +1,182 @@
+{
+  "seed": 322,
+  "folds": 5,
+  "trials": 50,
+  "estimator": "sklearn.linear_model.LogisticRegression",
+  "estimator_params": {
+    "n_estimators": 500,
+    "learning_rate": 0.05,
+    "num_leaves": 63,
+    "subsample": 0.8,
+    "subsample_freq": 1,
+    "colsample_bytree": 0.8,
+    "verbose": -1
+  },
+  "scale_features": true,
+  "search": {
+    "n_estimators": {
+      "type": "int",
+      "low": 150,
+      "high": 650
+    },
+    "num_leaves": {
+      "type": "int",
+      "low": 15,
+      "high": 95
+    },
+    "learning_rate": {
+      "low": 0.015,
+      "high": 0.15,
+      "log": true
+    },
+    "min_child_samples": {
+      "type": "int",
+      "low": 10,
+      "high": 100
+    },
+    "reg_lambda": {
+      "low": 0.001,
+      "high": 10.0,
+      "log": true
+    },
+    "colsample_bytree": {
+      "low": 0.5,
+      "high": 1.0
+    }
+  },
+  "team_search": {
+    "logreg": {
+      "C": {
+        "low": 0.0001,
+        "high": 100.0,
+        "log": true
+      },
+      "class_weight": {
+        "choices": [
+          null,
+          "balanced"
+        ]
+      }
+    },
+    "gaussian_nb": {
+      "var_smoothing": {
+        "low": 1e-12,
+        "high": 0.1,
+        "log": true
+      }
+    },
+    "knn": {
+      "n_neighbors": {
+        "type": "int",
+        "low": 5,
+        "high": 75
+      },
+      "weights": {
+        "choices": [
+          "distance",
+          "uniform"
+        ]
+      }
+    },
+    "random_forest": {
+      "n_estimators": {
+        "type": "int",
+        "low": 100,
+        "high": 400
+      },
+      "min_samples_leaf": {
+        "type": "int",
+        "low": 2,
+        "high": 25
+      },
+      "max_features": {
+        "choices": [
+          "sqrt",
+          "log2",
+          0.5
+        ]
+      },
+      "class_weight": {
+        "choices": [
+          null,
+          "balanced_subsample"
+        ]
+      }
+    },
+    "lightgbm": {
+      "n_estimators": {
+        "type": "int",
+        "low": 150,
+        "high": 650
+      },
+      "num_leaves": {
+        "type": "int",
+        "low": 15,
+        "high": 95
+      },
+      "learning_rate": {
+        "low": 0.015,
+        "high": 0.15,
+        "log": true
+      },
+      "min_child_samples": {
+        "type": "int",
+        "low": 10,
+        "high": 100
+      },
+      "reg_lambda": {
+        "low": 0.001,
+        "high": 10.0,
+        "log": true
+      },
+      "colsample_bytree": {
+        "low": 0.5,
+        "high": 1.0
+      }
+    },
+    "svm_rbf": {
+      "C": {
+        "low": 0.1,
+        "high": 30.0,
+        "log": true
+      },
+      "gamma": {
+        "low": 0.001,
+        "high": 0.2,
+        "log": true
+      },
+      "class_weight": {
+        "choices": [
+          null,
+          "balanced"
+        ]
+      }
+    },
+    "mlp": {
+      "alpha": {
+        "low": 1e-05,
+        "high": 0.03,
+        "log": true
+      },
+      "learning_rate_init": {
+        "low": 0.0001,
+        "high": 0.01,
+        "log": true
+      },
+      "batch_size": {
+        "choices": [
+          128,
+          256,
+          512
+        ]
+      }
+    }
+  },
+  "team_model": "lightgbm",
+  "model_seed": 42,
+  "max_train_rows": null,
+  "trusted_only": true,
+  "study_seconds": 4663.6,
+  "n_complete": 45,
+  "n_pruned": 5
+}

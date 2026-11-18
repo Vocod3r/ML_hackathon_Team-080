@@ -1,0 +1,36 @@
+{
+  "pooled_pointwise_accuracy": {
+    "classifier_only": 0.8988517745302714,
+    "hmm_original": 0.8974947807933195,
+    "hmm_tuned": 0.915553235908142
+  },
+  "pooled_continuity": {
+    "classifier_only": 0.9439686387622386,
+    "hmm_original": 0.9770212938548956,
+    "hmm_tuned": 0.9626103012392552
+  },
+  "mean_route_arc_f1": {
+    "classifier_only": 0.9311253924653868,
+    "hmm_original": 0.9556611423794313,
+    "hmm_tuned": 0.9482991671756528
+  },
+  "reverse_direction_errors": {
+    "classifier_only": 781,
+    "hmm_original": 961,
+    "hmm_tuned": 683
+  },
+  "trips_where_tuned_hmm_hurt": [
+    "00000007",
+    "00000065"
+  ],
+  "trips_where_tuned_hmm_helped": [
+    "00000000",
+    "00000009",
+    "00000040",
+    "00000052",
+    "00000056",
+    "00000076",
+    "00000077",
+    "00000091"
+  ]
+}

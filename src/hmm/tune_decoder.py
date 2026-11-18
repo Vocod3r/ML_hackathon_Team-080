@@ -80,6 +80,7 @@ def main():
     ap.add_argument("--trials", type=int, default=40)
     ap.add_argument("--seed", type=int, default=322)
     ap.add_argument("--output", type=Path, default=Path("results/hmm/decoder_tuning"))
+    ap.add_argument("--warm-start", type=Path, help="decoder yaml (e.g. an earlier tuned config) enqueued as the first trial")
     ap.add_argument("--write-config", type=Path, help="write the tuned config here (e.g. configs/hmm_tuned.yaml)")
     args = ap.parse_args()
 
@@ -109,6 +110,9 @@ def main():
     study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=args.seed))
     study.enqueue_trial({"beta_m": base_cfg["beta_m"], "disconnected_penalty": base_cfg["disconnected_penalty"],
                          "emission_weight": 1.0, "uturn_penalty": 0.0, "max_gap_s": base_cfg["max_gap_s"]})
+    if args.warm_start:
+        warm = yaml.safe_load(args.warm_start.read_text(encoding="utf-8"))
+        study.enqueue_trial({k: warm[k] for k in SPACE})
     study.optimize(objective, n_trials=args.trials)
     study.trials_dataframe().to_csv(args.output / "trials.csv", index=False)
 
