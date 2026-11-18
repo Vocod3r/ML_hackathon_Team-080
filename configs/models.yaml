@@ -1,0 +1,46 @@
+# AM321 - model configurations (initial / untuned values).
+# Every model in the report's comparison table comes from this file.
+#   family          : algorithm family (goes into the report table)
+#   max_train_rows  : subsample training rows for slow models (null = use all)
+#   params          : passed straight to the sklearn / lightgbm constructor
+
+random_state: 42
+
+models:
+  logreg:
+    family: Linear
+    max_train_rows: null
+    params: {C: 1.0, class_weight: balanced, max_iter: 2000}
+
+  gaussian_nb:
+    family: Probabilistic
+    max_train_rows: null
+    params: {var_smoothing: 1.0e-9}
+
+  knn:
+    family: Instance-based
+    max_train_rows: 200000          # KNN stores all training rows; prediction gets slow
+    params: {n_neighbors: 25, weights: distance}
+
+  random_forest:
+    family: Ensemble (bagging)
+    max_train_rows: 400000          # 300 deep trees on millions of rows is too slow on a laptop
+    params: {n_estimators: 300, min_samples_leaf: 5, max_features: sqrt,
+             class_weight: balanced_subsample, n_jobs: -1}
+
+  lightgbm:
+    family: Boosting
+    max_train_rows: null
+    params: {n_estimators: 500, learning_rate: 0.05, num_leaves: 63,
+             subsample: 0.8, subsample_freq: 1, colsample_bytree: 0.8, verbose: -1}
+
+  svm_rbf:
+    family: Kernel
+    max_train_rows: 30000           # SVC training time grows ~quadratically with rows
+    params: {C: 1.0, gamma: scale, class_weight: balanced}   # probabilities via CalibratedClassifierCV in model_zoo
+
+  mlp:
+    family: Neural network
+    max_train_rows: null
+    params: {hidden_layer_sizes: [64, 32], alpha: 1.0e-4, learning_rate_init: 1.0e-3,
+             max_iter: 200, early_stopping: true, validation_fraction: 0.1, n_iter_no_change: 10}
