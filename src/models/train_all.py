@@ -5,13 +5,15 @@ Run from the repo root:
     python -m src.models.train_all                       # all models, full data
     python -m src.models.train_all --models logreg lightgbm
     python -m src.models.train_all --sample              # quick test on the 5-trip sample
+    python -m src.models.train_all --select-only         # just redo the model selection CSVs
 
 For each model it does:
   1. 5-fold GroupKFold CV on the 80 training trips (folds split by trip_id)
   2. refit on all 80 training trips
   3. evaluate on the 10 student-testing trips
 and writes one JSON per model to results/models/runs/, then rebuilds
-results/models/comparison.csv from all JSONs (so models can be run separately).
+results/models/comparison.csv from all JSONs (so models can be run separately),
+and finally writes results/models/model_selection.csv + selected_model.csv.
 """
 import argparse
 import json
@@ -79,7 +81,7 @@ def fit_with_history(name, model, X, y, X_val, y_val):
     if name == "lightgbm":
         # Record log loss after every boosting round on train and student-test.
         # Recording only - no early stopping, so student-test does not influence the fit.
-        model.fit(X, y, eval_set=[(X, y), (X_val, y_val)],
+        model.fit(X, y, eval_X=(X, X_val), eval_y=(y, y_val),
                   eval_names=["train", "student_test"], eval_metric="binary_logloss")
         r = model.evals_result_
         return {"x_label": "boosting round",
@@ -125,6 +127,7 @@ def run_model(name, model_factory, family, max_rows, params, train, test, featur
         print(f"  fold {k}: val F1 {folds[-1]['val_macro_f1']:.4f}  "
               f"top1 {folds[-1]['val_top1_accuracy']:.4f}  ({folds[-1]['seconds']}s)", flush=True)
     folds = pd.DataFrame(folds)
+    cv_pooled = evaluate_all(train.assign(prob=oof))      # all 80 trips, each scored by a model that never saw it
 
     # ---- 2. Refit on all training trips ----------------------------------
     fit_df = subsample(fit_rows, max_rows, seed)
@@ -160,6 +163,8 @@ def run_model(name, model_factory, family, max_rows, params, train, test, featur
         "cv_macro_f1_std": float(folds["val_macro_f1"].std()),
         "cv_top1_mean": float(folds["val_top1_accuracy"].mean()),
         "cv_train_macro_f1_mean": float(folds["train_macro_f1"].mean()),
+        "cv_log_loss": cv_pooled["log_loss"],
+        "cv_top1_pooled": cv_pooled["top1_accuracy"],
         "train_macro_f1_full": train_f1,
         **{f"test_{k}": v for k, v in metrics.items()},
         "train_time_s": round(train_time, 2),
@@ -179,6 +184,9 @@ def run_model(name, model_factory, family, max_rows, params, train, test, featur
 def rebuild_comparison():
     """Merge every runs/*.json into one table, sorted by CV macro F1."""
     rows = [json.loads(p.read_text()) for p in sorted((OUT / "runs").glob("*.json"))]
+    if not rows:
+        raise SystemExit(f"No saved model results in {OUT / 'runs'} - train some models first "
+                         "(e.g. python -m src.models.train_all --sample).")
     df = pd.DataFrame(rows)
     df["config"] = df["config"].apply(json.dumps)
     df = df.sort_values("cv_macro_f1_mean", ascending=False)
@@ -186,12 +194,64 @@ def rebuild_comparison():
     return df
 
 
+def select_model(table):
+    """
+    Pick the model to hand to Bayesian optimisation + HMM, using ONLY cross-validation
+    results on the 80 training trips (student-test is reported, never used to choose).
+
+      Step 1  Primary metric: mean CV macro F1 (the brief's headline metric; balances
+              the rare 'true arc' class against the common 'wrong arc' class).
+      Step 2  Shortlist every model whose CV F1 is within one fold standard deviation
+              of the best model - differences smaller than the fold-to-fold noise are
+              not real evidence that one model is better.
+      Step 3  From the shortlist pick the lowest CV log loss, because the HMM multiplies
+              these probabilities, so well-calibrated probabilities matter most.
+      Step 4  Remaining ties: fastest inference (the API runs live during evaluation).
+    """
+    t = table.copy()
+    if "cv_log_loss" not in t.columns or t["cv_log_loss"].isna().any():
+        old = t.loc[t.get("cv_log_loss", pd.Series(np.nan, index=t.index)).isna(), "model"].tolist()
+        raise SystemExit(f"These results come from the old train_all.py (no cv_log_loss): {old}. "
+                         "Re-run them with: python -m src.models.train_all --models " + " ".join(old))
+    best = t.loc[t["cv_macro_f1_mean"].idxmax()]
+    threshold = best["cv_macro_f1_mean"] - best["cv_macro_f1_std"]
+    t["shortlisted"] = t["cv_macro_f1_mean"] >= threshold
+    short = t[t["shortlisted"]].sort_values(["cv_log_loss", "inference_ms_per_obs"])
+    chosen = short.iloc[0]["model"]
+    t["selected"] = t["model"] == chosen
+    t["selection_note"] = np.where(
+        t["selected"], "SELECTED: lowest CV log loss among shortlist",
+        np.where(t["shortlisted"], "shortlisted, higher CV log loss",
+                 f"CV F1 below {threshold:.4f} (best minus one std)"))
+    cols = ["model", "family", "selected", "shortlisted", "selection_note",
+            "cv_macro_f1_mean", "cv_macro_f1_std", "cv_log_loss", "cv_top1_pooled",
+            "test_top1_accuracy", "test_macro_f1", "test_log_loss", "test_route_continuity",
+            "train_time_s", "inference_ms_per_obs", "config"]
+    cols = [c for c in cols if c in t.columns]
+    t[cols].to_csv(OUT / "model_selection.csv", index=False)
+
+    sel = t[t["selected"]][cols].copy()
+    sel["selection_rule"] = ("max CV macro F1 -> shortlist within 1 std of best -> "
+                             "lowest CV log loss -> fastest inference")
+    sel["shortlist"] = ", ".join(short["model"])
+    sel.to_csv(OUT / "selected_model.csv", index=False)
+    print(f"\nSelected model: {chosen}  (shortlist: {', '.join(short['model'])}; "
+          f"F1 threshold {threshold:.4f})")
+    return chosen
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", nargs="*", help="subset of model names (default: all in models.yaml)")
     ap.add_argument("--sample", action="store_true", help="quick run on the 5-trip sample")
     ap.add_argument("--folds", type=int, default=5)
+    ap.add_argument("--select-only", action="store_true",
+                    help="skip training; rebuild comparison + selection from existing results/models/runs")
     args = ap.parse_args()
+
+    if args.select_only:
+        select_model(rebuild_comparison())
+        return
 
     cfg = load_config()
     seed = cfg.get("random_state", 42)
@@ -218,6 +278,7 @@ def main():
     cols = ["model", "family", "cv_macro_f1_mean", "cv_macro_f1_std", "test_top1_accuracy",
             "test_macro_f1", "test_log_loss", "train_time_s", "inference_ms_per_obs"]
     print("\n" + table[cols].to_string(index=False))
+    select_model(table)
 
 
 if __name__ == "__main__":
