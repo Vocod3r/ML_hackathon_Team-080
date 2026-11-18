@@ -90,11 +90,13 @@ def decode(cand_df, probs, graph, cfg):
     previous = None
 
     def finish_segment():
+        segment = []
         index = int(scores.argmax())
         for arcs, pointers in reversed(backtrack):
-            selected.append(arcs[index])
+            segment.append(arcs[index])
             if pointers is not None:
                 index = pointers[index]
+        selected.extend(reversed(segment))
         backtrack.clear()
 
     for obs_idx, group in frame.groupby("obs_idx", sort=False):
@@ -116,5 +118,5 @@ def decode(cand_df, probs, graph, cfg):
 
     finish_segment()
     result = frame[["obs_idx", "arc_id"]].drop_duplicates("obs_idx").reset_index(drop=True)
-    result["arc_id"] = selected[::-1]
+    result["arc_id"] = selected
     return result
