@@ -1,0 +1,6 @@
+# Paths are relative to the repository root unless absolute.
+trip_root: data/student_test
+model_path: artifacts/final_model.joblib
+feature_cols: data/processed/feature_cols.csv
+hmm_config: configs/hmm.yaml
+candidate_options: {}

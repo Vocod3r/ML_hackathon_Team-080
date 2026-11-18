@@ -1,0 +1,24 @@
+# API and interactive maps
+fastapi
+uvicorn[standard]
+folium
+PyYAML
+
+# Data, geospatial candidate generation, and graph decoding
+numpy
+pandas
+scipy
+scikit-learn
+networkx
+shapely>=2.0
+pyproj
+
+# Model artifacts and training/tuning workflows
+joblib
+lightgbm
+optuna
+pyarrow
+
+# EDA notebooks and plots
+matplotlib
+jupyter
