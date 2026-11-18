@@ -12,3 +12,33 @@ search:
     log: true
   class_weight:
     choices: [null, balanced]
+
+# Search spaces for AM321's model registry. Use --selected-model with its selection CSV.
+team_search:
+  logreg:
+    C: {low: 0.0001, high: 100.0, log: true}
+    class_weight: {choices: [null, balanced]}
+  gaussian_nb:
+    var_smoothing: {low: 1.0e-12, high: 1.0e-1, log: true}
+  knn:
+    n_neighbors: {type: int, low: 5, high: 75}
+    weights: {choices: [distance, uniform]}
+  random_forest:
+    n_estimators: {type: int, low: 100, high: 400}
+    min_samples_leaf: {type: int, low: 2, high: 25}
+    max_features: {choices: [sqrt, log2, 0.5]}
+    class_weight: {choices: [null, balanced_subsample]}
+  lightgbm:
+    n_estimators: {type: int, low: 150, high: 650}
+    num_leaves: {type: int, low: 15, high: 95}
+    learning_rate: {low: 0.015, high: 0.15, log: true}
+    min_child_samples: {type: int, low: 10, high: 100}
+    reg_lambda: {low: 0.001, high: 10.0, log: true}
+  svm_rbf:
+    C: {low: 0.1, high: 30.0, log: true}
+    gamma: {low: 0.001, high: 0.2, log: true}
+    class_weight: {choices: [null, balanced]}
+  mlp:
+    alpha: {low: 0.00001, high: 0.03, log: true}
+    learning_rate_init: {low: 0.0001, high: 0.01, log: true}
+    batch_size: {choices: [128, 256, 512]}
