@@ -1,0 +1,39 @@
+{
+  "model": "mlp",
+  "family": "Neural network",
+  "config": {
+    "hidden_layer_sizes": [
+      64,
+      32
+    ],
+    "alpha": 0.0001,
+    "learning_rate_init": 0.001,
+    "max_iter": 200,
+    "early_stopping": true,
+    "validation_fraction": 0.1,
+    "n_iter_no_change": 10
+  },
+  "max_train_rows": null,
+  "n_fit_rows": 1502391,
+  "seed": 42,
+  "cv_macro_f1_mean": 0.9221271002643936,
+  "cv_macro_f1_std": 0.025874658811310285,
+  "cv_top1_mean": 0.7948967993416979,
+  "cv_train_macro_f1_mean": 0.9516458382500808,
+  "cv_log_loss": 0.09040902633708067,
+  "cv_top1_pooled": 0.7857468440674226,
+  "train_macro_f1_full": 0.951629556703387,
+  "test_top1_accuracy": 0.8929540709812108,
+  "test_macro_f1": 0.9331903762957149,
+  "test_precision": 0.9371971416054637,
+  "test_recall": 0.929284271640364,
+  "test_log_loss": 0.0750618986820144,
+  "test_candidate_miss_rate": 0.0021398747390396658,
+  "test_route_continuity": 0.7653732697980485,
+  "test_top1_accuracy_trusted": 0.8942141849161135,
+  "train_time_s": 100.04,
+  "inference_time_s": 0.027,
+  "inference_ms_per_obs": 0.0014,
+  "test_partition": "student_test",
+  "timestamp": "2026-11-18T07:10:53"
+}

@@ -1,0 +1,32 @@
+{
+  "model": "svm_rbf",
+  "family": "Kernel",
+  "config": {
+    "C": 1.0,
+    "gamma": "scale",
+    "class_weight": "balanced"
+  },
+  "max_train_rows": 30000,
+  "n_fit_rows": 30000,
+  "seed": 42,
+  "cv_macro_f1_mean": 0.9127275695959449,
+  "cv_macro_f1_std": 0.023075085448945896,
+  "cv_top1_mean": 0.7946939280033954,
+  "cv_train_macro_f1_mean": 0.9370432503366599,
+  "cv_log_loss": 0.09869074030153419,
+  "cv_top1_pooled": 0.7857564402136102,
+  "train_macro_f1_full": 0.9382998165579912,
+  "test_top1_accuracy": 0.8713987473903967,
+  "test_macro_f1": 0.9194690217253696,
+  "test_precision": 0.9152316771839557,
+  "test_recall": 0.9238309498558188,
+  "test_log_loss": 0.09304357126960788,
+  "test_candidate_miss_rate": 0.0021398747390396658,
+  "test_route_continuity": 0.7526530612244898,
+  "test_top1_accuracy_trusted": 0.8726284430042335,
+  "train_time_s": 14.63,
+  "inference_time_s": 31.118,
+  "inference_ms_per_obs": 1.6241,
+  "test_partition": "student_test",
+  "timestamp": "2026-11-18T07:02:27"
+}
