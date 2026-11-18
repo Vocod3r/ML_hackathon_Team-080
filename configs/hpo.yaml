@@ -1,0 +1,14 @@
+seed: 322
+folds: 5
+trials: 50
+estimator: sklearn.linear_model.LogisticRegression
+estimator_params:
+  max_iter: 500
+scale_features: true
+search:
+  C:
+    low: 0.0001
+    high: 100.0
+    log: true
+  class_weight:
+    choices: [null, balanced]
