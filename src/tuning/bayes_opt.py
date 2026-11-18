@@ -83,10 +83,10 @@ def tune(train, features, cfg, out_dir, student_test=None, artifacts_dir=None):
     full_fit = _fit_indices(train, np.arange(len(train)), cfg)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    def cross_validate(params):
+    def cross_validate(params, trial=None):
         probabilities = np.empty(len(train))
         fold_records = []
-        for fit, valid in folds:
+        for k, (fit, valid) in enumerate(folds):
             model = _model(cfg, params).fit(X.iloc[fit], y.iloc[fit])
             probs = _positive_prob(model, X.iloc[valid])
             probabilities[valid] = probs
@@ -94,15 +94,36 @@ def tune(train, features, cfg, out_dir, student_test=None, artifacts_dir=None):
                 "macro_f1": f1_score(y.iloc[valid], probs >= 0.5, average="macro"),
                 "log_loss": log_loss(y.iloc[valid], probs, labels=[0, 1]),
             })
-        return pd.DataFrame(fold_records).mean(), probabilities
+            if trial is not None:
+                # Report the running mean so the median pruner can stop clearly bad trials early.
+                trial.report(float(np.mean([r["log_loss"] for r in fold_records])), k)
+                if trial.should_prune():
+                    raise optuna.TrialPruned()
+        records = pd.DataFrame(fold_records)
+        summary = records.mean()
+        summary["log_loss_std"] = records["log_loss"].std()
+        summary["macro_f1_std"] = records["macro_f1"].std()
+        return summary, probabilities
 
     def objective(trial):
-        metrics, _ = cross_validate(_suggest(trial, cfg["search"]))
+        start = perf_counter()
+        metrics, _ = cross_validate(_suggest(trial, cfg["search"]), trial)
         trial.set_user_attr("cv_macro_f1", float(metrics["macro_f1"]))
+        trial.set_user_attr("cv_macro_f1_std", float(metrics["macro_f1_std"]))
+        trial.set_user_attr("cv_log_loss_std", float(metrics["log_loss_std"]))
+        trial.set_user_attr("seconds", round(perf_counter() - start, 1))
+        print(f"trial {trial.number}: log loss {metrics['log_loss']:.5f} "
+              f"F1 {metrics['macro_f1']:.4f} ({perf_counter() - start:.0f}s)", flush=True)
         return float(metrics["log_loss"])
 
-    study = optuna.create_study(direction="minimize", sampler=optuna.samplers.TPESampler(seed=cfg["seed"]))
+    pruner = optuna.pruners.MedianPruner(n_startup_trials=cfg.get("pruner_startup_trials", 10), n_warmup_steps=1)
+    study = optuna.create_study(direction="minimize", pruner=pruner,
+                                sampler=optuna.samplers.TPESampler(seed=cfg["seed"]))
+    study_start = perf_counter()
     study.optimize(objective, n_trials=cfg["trials"])
+    cfg = cfg | {"study_seconds": round(perf_counter() - study_start, 1),
+                 "n_complete": sum(t.state.name == "COMPLETE" for t in study.trials),
+                 "n_pruned": sum(t.state.name == "PRUNED" for t in study.trials)}
     (out_dir / "study_config.json").write_text(json.dumps(cfg, indent=2) + "\n", encoding="utf-8")
     study.trials_dataframe().to_csv(out_dir / "trials.csv", index=False)
     (out_dir / "best_params.json").write_text(json.dumps(study.best_params, indent=2) + "\n", encoding="utf-8")
@@ -111,13 +132,18 @@ def tune(train, features, cfg, out_dir, student_test=None, artifacts_dir=None):
     tuned_model = None
     for name, params in (("untuned", {}), ("tuned", study.best_params)):
         cv, probabilities = cross_validate(params)
-        record = {"model": name, "cv_macro_f1": cv["macro_f1"], "cv_log_loss": cv["log_loss"]}
+        record = {"model": name, "params": json.dumps(cfg["estimator_params"] | params),
+                  "cv_macro_f1": cv["macro_f1"], "cv_macro_f1_std": cv["macro_f1_std"],
+                  "cv_log_loss": cv["log_loss"], "cv_log_loss_std": cv["log_loss_std"]}
+        start = perf_counter()
         model = _model(cfg, params).fit(X.iloc[full_fit], y.iloc[full_fit])
+        record["train_time_s"] = perf_counter() - start
         if student_test is not None:
             start = perf_counter()
             test_probs = _positive_prob(model, student_test[features])
             record["test_inference_s"] = perf_counter() - start
             scored = student_test.reset_index(drop=True).assign(probability=test_probs)
+            record["test_inference_ms_per_obs"] = 1000 * record["test_inference_s"] / scored.groupby(["trip_id", "obs_idx"]).ngroups
             best = scored.groupby(["trip_id", "obs_idx"])["probability"].idxmax()
             record["test_top1_accuracy"] = scored.loc[best, "label"].mean()
             record["test_macro_f1"] = f1_score(scored["label"], test_probs >= 0.5, average="macro")
@@ -155,7 +181,8 @@ def main():
     features = pd.read_csv(args.features, header=None)[0].tolist()
     train = pd.read_parquet(args.train)
     test = pd.read_parquet(args.student_test) if args.student_test else None
-    with threadpool_limits(limits=1):
+    # Limit BLAS only: capping OpenMP too would force LightGBM onto a single core.
+    with threadpool_limits(limits=1, user_api="blas"):
         results = tune(train, features, cfg, args.output, test, args.artifacts_dir)
     print(results.to_string(index=False))
 

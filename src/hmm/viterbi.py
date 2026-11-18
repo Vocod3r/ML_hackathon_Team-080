@@ -19,7 +19,7 @@ def _emissions(candidates, probs, cfg):
         probs = np.asarray(probs, dtype=float)
         if probs.shape != scores.shape or not np.all((probs >= 0) & (probs <= 1)):
             raise ValueError("Supply one positive-class probability per candidate row")
-        scores = np.log(np.maximum(probs, 1e-12))
+        scores = cfg.get("emission_weight", 1.0) * np.log(np.maximum(probs, cfg.get("prob_floor", 1e-12)))
     if probs is None or cfg.get("combine_gps_distance", False):
         sigma = cfg.get("gps_sigma_m", 20.0)
         if sigma <= 0:
@@ -32,6 +32,7 @@ def _transitions(graph, cfg):
     beta = cfg.get("beta_m", 30.0)
     penalty = cfg.get("disconnected_penalty", 12.0)
     cutoff = cfg.get("search_cutoff_m", 600.0)
+    uturn = cfg.get("uturn_penalty", 0.0)
     if not (beta > 0 and penalty >= 0 and cutoff > 0):
         raise ValueError("Invalid transition configuration")
     endpoints = graph.graph.get("arc_endpoints")
@@ -61,7 +62,12 @@ def _transitions(graph, cfg):
                     distance = (1 - old_fraction) * old_length + middle + new_fraction * new_length
                 else:
                     continue
-                scores[i, j] = max(-penalty, -abs(distance - gps_step) / beta)
+                score = max(-penalty, -abs(distance - gps_step) / beta)
+                # Entering the opposite-direction twin of the previous arc is a U-turn: it costs
+                # no network distance, so without this term the decoder flips direction freely.
+                if old_arc != new_arc and endpoints[old_arc] == endpoints[new_arc][::-1]:
+                    score -= uturn
+                scores[i, j] = score
         return scores
 
     return matrix
