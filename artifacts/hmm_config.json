@@ -1,9 +1,11 @@
 {
   "gps_sigma_m": 20.0,
   "combine_gps_distance": false,
-  "beta_m": 30.0,
-  "disconnected_penalty": 12.0,
+  "beta_m": 76.06198461152668,
+  "disconnected_penalty": 13.207783628653496,
   "search_cutoff_m": 600.0,
   "cache_size": 256,
-  "max_gap_s": 60.0
+  "max_gap_s": 77.01315387872985,
+  "emission_weight": 1.8264387175544625,
+  "uturn_penalty": 21.03090724777707
 }

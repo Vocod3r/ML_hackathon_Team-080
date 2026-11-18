@@ -137,10 +137,16 @@ def trajectory_plots():
         plt.tight_layout(); plt.savefig(OUT / f"anomaly_trip_{tid}.png", dpi=120); plt.close()
 
 
-def folium_map(part="student_test", tid="00000007", pad_m=600):
-    """Interactive map: raw GPS, road network (clipped to the trip bbox), reference route."""
+def folium_map(part="student_test", tid="00000007", pad_m=600, window=None):
+    """Interactive map: raw GPS, road network (clipped to the bbox), reference route.
+
+    window=(first_fix, last_fix) draws only that stretch of the trip, with every fix, at street
+    level so GPS noise against the road and the reference route is visible (used for the report)."""
     trip = load_trip(RAW / part / tid)
     ll, xy = trip["track"][:, :2], trip["xy"]
+    if window is not None:
+        keep = slice(window[0], window[1] + 1)
+        ll, xy, pad_m = ll[keep], xy[keep], 120
     lo, hi = xy.min(0) - pad_m, xy.max(0) + pad_m
     a, b = trip["nxy"][trip["arcs"][:, 0]], trip["nxy"][trip["arcs"][:, 1]]
     inb = ((np.minimum(a, b) >= lo) & (np.maximum(a, b) <= hi)).all(1)
@@ -154,12 +160,14 @@ def folium_map(part="student_test", tid="00000007", pad_m=600):
     ref = folium.FeatureGroup("Reference route (.route)", show=True)
     for i in trip["route"]:
         p, q = trip["arcs"][i]
+        if window is not None and not inb[i]:
+            continue
         folium.PolyLine([(nd[p, 1], nd[p, 0]), (nd[q, 1], nd[q, 0])], color="green", weight=5, opacity=.8).add_to(ref)
     ref.add_to(m)
     g = folium.FeatureGroup("Raw GPS fixes", show=True)
-    for k in range(0, len(ll), 3):
+    for k in range(0, len(ll), 1 if window is not None else 3):
         folium.CircleMarker((ll[k, 1], ll[k, 0]), radius=2, color="blue", fill=True, weight=1,
-                            tooltip=f"fix {k}, t={trip['track'][k, 2]:.0f}s").add_to(g)
+                            tooltip=f"fix {k + (window[0] if window else 0)}").add_to(g)
     g.add_to(m)
     folium.Marker((ll[0, 1], ll[0, 0]), tooltip="start", icon=folium.Icon(color="green")).add_to(m)
     folium.Marker((ll[-1, 1], ll[-1, 0]), tooltip="end", icon=folium.Icon(color="red")).add_to(m)
@@ -170,7 +178,57 @@ def folium_map(part="student_test", tid="00000007", pad_m=600):
               '<br><span style="color:green">&#9644;</span> reference route<br><span style="color:#999">&#9644;</span> road network</div>'
               % (tid, part))
     m.get_root().html.add_child(folium.Element(legend))
-    m.save(OUT / f"folium_eda_{part}_{tid}.html")
+    m.save(OUT / f"folium_eda_{part}_{tid}{'_zoom' if window is not None else ''}.html")
+
+
+def zoom_window(part, tid, length=120, min_speed_ms=4.0):
+    """Fix range of `length` fixes where the vehicle really travels and the trusted fixes lie farthest
+    from their reference arc: the clearest example of GPS noise on a road.
+
+    "Travels" uses NET displacement across the window (>= min_speed_ms on average), not the sum of
+    per-second steps, because jitter of a parked car would otherwise look like fast movement."""
+    trip = load_trip(RAW / part / tid)
+    al = reference_alignment(trip)
+    xy, n = trip["xy"], len(al)
+    if n <= length:
+        return 0, n - 1
+    d = al["align_dist"].where(al["trusted"], 0).to_numpy()
+    starts = np.arange(n - length)
+    net = np.hypot(*(xy[starts + length] - xy[starts]).T) / length            # m/s over the window
+    noise = np.convolve(d, np.ones(length) / length, mode="valid")[: n - length]
+    score = np.where(net >= min_speed_ms, noise, -1.0)
+    first = int(np.argmax(score))
+    return first, first + length
+
+
+def missing_value_analysis():
+    """Per-partition file availability and invalid-value counts for every raw file type."""
+    rows = []
+    for part in ("train", "student_test"):
+        trips = list_trips(RAW / part)
+        r = dict(partition=part, trips=len(trips), trips_missing_a_file=0, empty_files=0,
+                 track_nonfinite_rows=0, track_lon_lat_out_of_range=0, nodes_nonfinite_rows=0,
+                 nodes_lon_lat_out_of_range=0, arcs_node_id_out_of_range=0, arcs_self_loops=0,
+                 route_arc_id_out_of_range=0, track_rows=0, nodes_rows=0, arcs_rows=0, route_rows=0)
+        for tid in trips:
+            d = RAW / part / tid
+            files = {k: d / f"{tid}.{k}" for k in ("track", "nodes", "arcs", "route")}
+            r["trips_missing_a_file"] += int(not all(f.exists() for f in files.values()))
+            r["empty_files"] += sum(f.exists() and f.stat().st_size == 0 for f in files.values())
+            track, nodes = np.loadtxt(files["track"], ndmin=2), np.loadtxt(files["nodes"], ndmin=2)
+            arcs, route = np.loadtxt(files["arcs"], dtype=np.int64, ndmin=2), np.loadtxt(files["route"], dtype=np.int64, ndmin=1)
+            r["track_rows"] += len(track); r["nodes_rows"] += len(nodes); r["arcs_rows"] += len(arcs); r["route_rows"] += route.size
+            r["track_nonfinite_rows"] += int((~np.isfinite(track)).any(1).sum())
+            r["nodes_nonfinite_rows"] += int((~np.isfinite(nodes)).any(1).sum())
+            r["track_lon_lat_out_of_range"] += int(((np.abs(track[:, 0]) > 180) | (np.abs(track[:, 1]) > 90)).sum())
+            r["nodes_lon_lat_out_of_range"] += int(((np.abs(nodes[:, 0]) > 180) | (np.abs(nodes[:, 1]) > 90)).sum())
+            r["arcs_node_id_out_of_range"] += int(((arcs < 0) | (arcs >= len(nodes))).any(1).sum())
+            r["arcs_self_loops"] += int((arcs[:, 0] == arcs[:, 1]).sum())
+            r["route_arc_id_out_of_range"] += int(((route < 0) | (route >= len(arcs))).sum())
+        rows.append(r)
+    out = pd.DataFrame(rows)
+    out.to_csv(OUT / "missing_value_analysis.csv", index=False)
+    return out
 
 
 def main():
@@ -181,6 +239,9 @@ def main():
     trajectory_plots()
     folium_map("student_test", "00000007")
     folium_map("train", "00000003")
+    for part, tid in (("student_test", "00000007"), ("train", "00000003")):
+        folium_map(part, tid, window=zoom_window(part, tid))
+    print(missing_value_analysis().T.to_string())
     agg = df.groupby("partition").agg(trips=("trip", "count"), obs_total=("n_obs", "sum"), obs_mean=("n_obs", "mean"),
                                       obs_min=("n_obs", "min"), obs_max=("n_obs", "max"), nodes_median=("n_nodes", "median"),
                                       arcs_median=("n_arcs", "median"), route_arcs_mean=("route_arcs", "mean"),

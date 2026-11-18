@@ -1,0 +1,3 @@
+partition,trips,trips_missing_a_file,empty_files,track_nonfinite_rows,track_lon_lat_out_of_range,nodes_nonfinite_rows,nodes_lon_lat_out_of_range,arcs_node_id_out_of_range,arcs_self_loops,route_arc_id_out_of_range,track_rows,nodes_rows,arcs_rows,route_rows
+train,80,0,0,0,0,0,0,0,22,0,208417,1933485,3876904,31336
+student_test,10,0,0,0,0,0,0,0,2,0,19160,90689,185041,3477

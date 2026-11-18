@@ -65,8 +65,11 @@ def _transitions(graph, cfg):
                 score = max(-penalty, -abs(distance - gps_step) / beta)
                 # Entering the opposite-direction twin of the previous arc is a U-turn: it costs
                 # no network distance, so without this term the decoder flips direction freely.
-                if old_arc != new_arc and endpoints[old_arc] == endpoints[new_arc][::-1]:
-                    score -= uturn
+                if old_arc != new_arc and uturn:
+                    old_start, old_end_node = endpoints[old_arc]
+                    new_start_node, new_end = endpoints[new_arc]
+                    if old_start == new_end and old_end_node == new_start_node:
+                        score -= uturn
                 scores[i, j] = score
         return scores
 

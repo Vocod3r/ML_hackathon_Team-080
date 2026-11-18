@@ -1,0 +1,104 @@
+24 trips | classifier-only 0.9081 | HMM with starting config 0.9082
+[I 2026-11-18 16:15:29,794] A new study created in memory with name: no-name-eab0640b-1d99-479c-bb2e-acbba42b2771
+trial 0: acc 0.9082 (17s) beta_m=30 disconnected_penalty=12 emission_weight=1 uturn_penalty=0 max_gap_s=60
+[I 2026-11-18 16:15:47,244] Trial 0 finished with value: 0.9081897643780086 and parameters: {'beta_m': 30.0, 'disconnected_penalty': 12.0, 'emission_weight': 1.0, 'uturn_penalty': 0.0, 'max_gap_s': 60.0}. Best is trial 0 with value: 0.9081897643780086.
+trial 1: acc 0.9204 (18s) beta_m=76.1 disconnected_penalty=13.2 emission_weight=1.83 uturn_penalty=21 max_gap_s=77
+[I 2026-11-18 16:16:04,845] Trial 1 finished with value: 0.920382569039777 and parameters: {'beta_m': 76.06198461152668, 'disconnected_penalty': 13.207783628653496, 'emission_weight': 1.8264387175544625, 'uturn_penalty': 21.03090724777707, 'max_gap_s': 77.01315387872985}. Best is trial 1 with value: 0.920382569039777.
+trial 2: acc 0.9083 (18s) beta_m=18.6 disconnected_penalty=3.06 emission_weight=0.422 uturn_penalty=5 max_gap_s=10.4
+[I 2026-11-18 16:16:22,589] Trial 2 finished with value: 0.9082531036230048 and parameters: {'beta_m': 18.55281530624544, 'disconnected_penalty': 3.057564446226383, 'emission_weight': 0.4223611137358278, 'uturn_penalty': 5.000733750304245, 'max_gap_s': 10.442238627780899}. Best is trial 1 with value: 0.920382569039777.
+trial 3: acc 0.8968 (20s) beta_m=31.4 disconnected_penalty=3.63 emission_weight=0.268 uturn_penalty=5.32 max_gap_s=17.6
+[I 2026-11-18 16:16:42,135] Trial 3 finished with value: 0.8967887002786927 and parameters: {'beta_m': 31.380385100653296, 'disconnected_penalty': 3.6324411118058535, 'emission_weight': 0.2675268161420115, 'uturn_penalty': 5.323194006614976, 'max_gap_s': 17.629045945007476}. Best is trial 1 with value: 0.920382569039777.
+trial 4: acc 0.9157 (20s) beta_m=115 disconnected_penalty=2.29 emission_weight=2.62 uturn_penalty=5.31 max_gap_s=13.5
+[I 2026-11-18 16:17:01,937] Trial 4 finished with value: 0.9156637952875601 and parameters: {'beta_m': 115.26874139824022, 'disconnected_penalty': 2.294054047444604, 'emission_weight': 2.619980253328398, 'uturn_penalty': 5.307488164052346, 'max_gap_s': 13.537782700249975}. Best is trial 1 with value: 0.920382569039777.
+trial 5: acc 0.9188 (19s) beta_m=106 disconnected_penalty=23.5 emission_weight=1.42 uturn_penalty=20.1 max_gap_s=65.8
+[I 2026-11-18 16:17:20,759] Trial 5 finished with value: 0.9187990879148721 and parameters: {'beta_m': 106.11478049716578, 'disconnected_penalty': 23.54864644511771, 'emission_weight': 1.4168935142229515, 'uturn_penalty': 20.07124192073496, 'max_gap_s': 65.79017576822208}. Best is trial 1 with value: 0.920382569039777.
+trial 6: acc 0.9187 (19s) beta_m=11 disconnected_penalty=2.49 emission_weight=1.68 uturn_penalty=10.8 max_gap_s=39.9
+[I 2026-11-18 16:17:39,741] Trial 6 finished with value: 0.9187040790473777 and parameters: {'beta_m': 10.961617687137377, 'disconnected_penalty': 2.491434858012726, 'emission_weight': 1.6755724996283763, 'uturn_penalty': 10.750065174377726, 'max_gap_s': 39.853790772767276}. Best is trial 1 with value: 0.920382569039777.
+trial 7: acc 0.9090 (18s) beta_m=111 disconnected_penalty=9.18 emission_weight=0.329 uturn_penalty=18.4 max_gap_s=100
+[I 2026-11-18 16:17:57,894] Trial 7 finished with value: 0.9089815049404611 and parameters: {'beta_m': 111.43284274386919, 'disconnected_penalty': 9.17943153547821, 'emission_weight': 0.329431503899999, 'uturn_penalty': 18.423811077681222, 'max_gap_s': 100.39678263126683}. Best is trial 1 with value: 0.920382569039777.
+trial 8: acc 0.9185 (38s) beta_m=116 disconnected_penalty=3.3 emission_weight=2.07 uturn_penalty=11.9 max_gap_s=25.8
+[I 2026-11-18 16:18:36,017] Trial 8 finished with value: 0.918450722067393 and parameters: {'beta_m': 115.97484162010876, 'disconnected_penalty': 3.2981141754058854, 'emission_weight': 2.0732935736898233, 'uturn_penalty': 11.869778016418572, 'max_gap_s': 25.819323885760642}. Best is trial 1 with value: 0.920382569039777.
+trial 9: acc 0.9111 (57s) beta_m=6.03 disconnected_penalty=4.05 emission_weight=0.777 uturn_penalty=1.19 max_gap_s=102
+[I 2026-11-18 16:19:33,425] Trial 9 finished with value: 0.9111033696478338 and parameters: {'beta_m': 6.029211317302013, 'disconnected_penalty': 4.054329450770165, 'emission_weight': 0.7774079466184389, 'uturn_penalty': 1.193705398674767, 'max_gap_s': 101.83511308112037}. Best is trial 1 with value: 0.920382569039777.
+trial 10: acc 0.9053 (43s) beta_m=52 disconnected_penalty=32.9 emission_weight=0.516 uturn_penalty=28.9 max_gap_s=50.7
+[I 2026-11-18 16:20:16,860] Trial 10 finished with value: 0.9053394983531796 and parameters: {'beta_m': 52.03356920293103, 'disconnected_penalty': 32.88833902507646, 'emission_weight': 0.5160260662527036, 'uturn_penalty': 28.893624076598737, 'max_gap_s': 50.702486309931146}. Best is trial 1 with value: 0.920382569039777.
+trial 11: acc 0.9177 (19s) beta_m=60.8 disconnected_penalty=22.2 emission_weight=1.33 uturn_penalty=21.9 max_gap_s=70.4
+[I 2026-11-18 16:20:35,395] Trial 11 finished with value: 0.9176589815049404 and parameters: {'beta_m': 60.832173386199074, 'disconnected_penalty': 22.19451566334891, 'emission_weight': 1.3302556616934202, 'uturn_penalty': 21.898233039069808, 'max_gap_s': 70.42506555457041}. Best is trial 1 with value: 0.920382569039777.
+trial 12: acc 0.9169 (18s) beta_m=60.8 disconnected_penalty=17.5 emission_weight=1.25 uturn_penalty=24.6 max_gap_s=81.4
+[I 2026-11-18 16:20:53,112] Trial 12 finished with value: 0.916867240942488 and parameters: {'beta_m': 60.77678540169395, 'disconnected_penalty': 17.487767237368576, 'emission_weight': 1.248373919463933, 'uturn_penalty': 24.55233987746106, 'max_gap_s': 81.43243893429822}. Best is trial 1 with value: 0.920382569039777.
+trial 13: acc 0.9187 (18s) beta_m=72.6 disconnected_penalty=36.7 emission_weight=2.81 uturn_penalty=17.2 max_gap_s=32.7
+[I 2026-11-18 16:21:11,377] Trial 13 finished with value: 0.9187040790473777 and parameters: {'beta_m': 72.58341497339521, 'disconnected_penalty': 36.71231532456071, 'emission_weight': 2.8078011521129698, 'uturn_penalty': 17.187853307105772, 'max_gap_s': 32.727644386970425}. Best is trial 1 with value: 0.920382569039777.
+trial 14: acc 0.9180 (18s) beta_m=39.4 disconnected_penalty=6.13 emission_weight=1.82 uturn_penalty=22.4 max_gap_s=119
+[I 2026-11-18 16:21:28,907] Trial 14 finished with value: 0.9180390169749176 and parameters: {'beta_m': 39.3532986554774, 'disconnected_penalty': 6.130673085664925, 'emission_weight': 1.8160449310667506, 'uturn_penalty': 22.38540336979484, 'max_gap_s': 119.02815832856177}. Best is trial 1 with value: 0.920382569039777.
+trial 15: acc 0.8933 (18s) beta_m=19.4 disconnected_penalty=16.7 emission_weight=0.676 uturn_penalty=28.7 max_gap_s=47.7
+[I 2026-11-18 16:21:46,473] Trial 15 finished with value: 0.8933367114263998 and parameters: {'beta_m': 19.44279293392662, 'disconnected_penalty': 16.723664020827318, 'emission_weight': 0.6757879277423765, 'uturn_penalty': 28.72702027068182, 'max_gap_s': 47.717889880882055}. Best is trial 1 with value: 0.920382569039777.
+trial 16: acc 0.9172 (18s) beta_m=83.1 disconnected_penalty=25.5 emission_weight=1.13 uturn_penalty=13.3 max_gap_s=75.5
+[I 2026-11-18 16:22:04,111] Trial 16 finished with value: 0.9171522675449708 and parameters: {'beta_m': 83.10554829156662, 'disconnected_penalty': 25.484601303502153, 'emission_weight': 1.125804229162784, 'uturn_penalty': 13.316564310015089, 'max_gap_s': 75.49383947212692}. Best is trial 1 with value: 0.920382569039777.
+{
+  "tuning_trips": [
+    "00000005",
+    "00000006",
+    "00000011",
+    "00000012",
+    "00000014",
+    "00000018",
+    "00000019",
+    "00000024",
+    "00000029",
+    "00000041",
+    "00000043",
+    "00000045",
+    "00000053",
+    "00000055",
+    "00000060",
+    "00000061",
+    "00000068",
+    "00000070",
+    "00000079",
+    "00000085",
+    "00000088",
+    "00000090",
+    "00000095",
+    "00000099"
+  ],
+  "classifier_only_accuracy": 0.9081264251330124,
+  "starting_config_accuracy": 0.9081897643780086,
+  "tuned_accuracy": 0.920382569039777,
+  "best_params": {
+    "beta_m": 76.06198461152668,
+    "disconnected_penalty": 13.207783628653496,
+    "emission_weight": 1.8264387175544625,
+    "uturn_penalty": 21.03090724777707,
+    "max_gap_s": 77.01315387872985
+  },
+  "search_space": {
+    "beta_m": [
+      5.0,
+      120.0,
+      true
+    ],
+    "disconnected_penalty": [
+      2.0,
+      40.0,
+      true
+    ],
+    "emission_weight": [
+      0.2,
+      3.0,
+      true
+    ],
+    "uturn_penalty": [
+      0.0,
+      30.0,
+      false
+    ],
+    "max_gap_s": [
+      10.0,
+      120.0,
+      true
+    ]
+  },
+  "seed": 322,
+  "trials": 17,
+  "probability_source": "results\\hpo\\oof_probabilities.parquet"
+}
